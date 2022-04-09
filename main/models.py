@@ -96,10 +96,11 @@ class Product(models.Model):
 
 
 class OrderItem(models.Model):
-
+    # id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
     fulfilled = models.BooleanField(default=False)
+    fulfill_date = models.DateTimeField(null = True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     # date = models.DateTimeField('date purchased')
@@ -122,10 +123,16 @@ class OrderItem(models.Model):
             return self.get_total_discount_item_price()
         return self.get_total_item_price()
     
+    def get_fulfill_url(self):
+        return reverse("fulfill", kwargs={
+            'pk': self.id
+        })
 
 
-# class Sub_Order(models.Model):
+
+# class SellerOrder(models.Model):
 #     items = models.ManyToManyField
+
 class Order(models.Model):
     user = models.ForeignKey(CustomUser,
                              on_delete=models.CASCADE)
@@ -176,6 +183,7 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += 1
         return total
+    
 
     def get_absolute_url(self):
         return reverse("detailed-order-page", kwargs={'slug': self.slug})

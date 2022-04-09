@@ -32,7 +32,10 @@
                     {% if item.fulfilled %}
                     already fulfilled
                     {% else %}
-                    <input type="submit" value="fulfill">
+                    <a href="{{ item.get_fulfill_url }}" class="btn btn-primary btn-md my-0 p">
+                        fulfill
+                      </a>
+
                     {% endif %}
                     </form>
                 </td>

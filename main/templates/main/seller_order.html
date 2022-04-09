@@ -10,8 +10,8 @@
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">total amount</th>
-            <th scope="col">number of items</th>
+            <th scope="col">buyer</th>
+            <th scope="col">shipping adress</th>
             <th scope="col">order detail</th>
         </tr>
     </thead>
@@ -19,8 +19,8 @@
         {% for item in object %}
         <tr>
             <th scope="row"> {{ item.ordered_date }} </th>
-                <td>{{ item.get_total}}</td>
-                <td>{{ item.get_numOfItem}}</td>
+                <td>{{ item.user}}</td>
+                <td>{{street_address}} {{ item.shipping_address.state}}</td>
 
 
                 <td>

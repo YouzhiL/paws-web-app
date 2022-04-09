@@ -17,7 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.db.models import Q
+import datetime
 
 
 
@@ -115,9 +115,17 @@ class OrderSummaryView(LoginRequiredMixin, View):
 class OrderHistoryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
-            order = Order.objects.filter(user=self.request.user)
+            orders = Order.objects.filter(user=self.request.user)
+            for order in orders:
+                fulfilled = True
+                for item in order.items.all():
+                    if not item.fulfilled:
+                        fulfilled = False
+                order.fulfilled = fulfilled
+                order.save()
+            
             context = {
-                'object': order
+                'object': orders
             }
             return render(self.request, 'main/order_history.html', context)
         except ObjectDoesNotExist:
@@ -145,11 +153,17 @@ class SellerOrderDetailView(LoginRequiredMixin, DetailView):
     template_name = "main/seller_order_detail.html"
 
 
-
-class OrderDetailView(LoginRequiredMixin, DetailView):
+def fulfill(request, pk):
+    # print(id)
+    item = OrderItem.objects.get(id = pk)
+    item.fulfilled = True
+    item.fulfill_date = datetime.datetime.now()
+    item.save()
+    return redirect('seller-order')
     
 
 
+class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
 
     # def get_context_data(self, *args, **kwargs):
@@ -161,10 +175,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     #     context = super(OrderDetailView,
     #          self).get_context_data(*args, **kwargs)
     template_name = "main/order_detail.html"
-    def post(self, *args, **kwargs):
-        data = self.request.POST
-        action = data.get('fulfill')
-        if action == 'fulfill':
+
 
 
 

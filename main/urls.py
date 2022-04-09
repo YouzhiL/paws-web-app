@@ -27,6 +27,6 @@ urlpatterns = [
     path('checkout/', views.CheckoutView.as_view(), name='checkout'),
     path('detailed-order-page/<slug>/', views.OrderDetailView.as_view(), name = 'detailed-order-page'),
     path('seller-detail-order/<slug>/', views.SellerOrderDetailView.as_view(), name = 'seller-detail-order'),
-
+    path('fulfill/<pk>/', views.fulfill,name='fulfill'),
     
 ]
