@@ -1,0 +1,204 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+  <main class="mt-5 pt-4">
+    <div class="container dark-grey-text mt-5">
+
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/14.jpg" class="img-fluid" alt="img">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!--Content-->
+          <div class="p-4">
+
+        <!-- 
+                <div class="mb-3">
+              <a href="">
+                <span class="badge purple mr-1">{{ object.get_category_display }}</span>
+              </a>
+            </div>
+
+             
+        -->
+            <p class="lead font-weight-bold">{{object.product_name}}</p>
+
+            <p class="lead font-weight-bold">Description</p>
+
+            <p>{{ object.description }}</p>
+            <p class="lead">
+                {{ object.get_rating }}
+              </p>
+            <!--Grid row-->
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <a href="{{ object.get_product_feedback_url }}" >
+                Add Rating
+            </a>
+
+            {% comment %} <form class="d-flex justify-content-left">
+              <!-- Default input -->
+              <input type="number" value="1" aria-label="Search" class="form-control" style="width: 100px">
+              <button class="btn btn-primary btn-md my-0 p" type="submit">
+                Add to cart
+                <i class="fas fa-shopping-cart ml-1"></i>
+              </button>
+
+            </form> {% endcomment %}
+            <!-- 
+                <a href="{{ object.get_add_to_cart_url }}" class="btn btn-primary btn-md my-0 p">
+              Add to cart
+              <i class="fas fa-shopping-cart ml-1"></i>
+            </a>
+            <a href="{{ object.get_remove_from_cart_url }}" class="btn btn-danger btn-md my-0 p">
+              Remove from cart
+            </a> 
+        -->
+
+          </div>
+          <!--Content-->
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+      <hr>
+
+      <!--Grid row-->
+      <div class="row d-flex justify-content-center wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 text-center">
+
+          <h4 class="my-4 h4">Choose the Seller</h4>
+
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>Seller</th>
+              <th>Price</th> 
+              <th>Quantity</th>
+
+              <th>Add to cart</th>
+              <th>Remove from cart</th>
+
+            </tr>
+            </thead>
+            {% for seller in sellers %}
+            <tr>
+              <td>{{ seller.seller }}</td>
+              <td>{{ seller.price }}</td> 
+              <td>{{ seller.quantity }}</td>
+
+              <td>
+                  {% if seller.quantity == 0 %}
+                  <a href="" class="btn btn-primary btn-md my-0 p">
+                    Out of Stock
+                    <i class="fas fa-shopping-cart ml-1"></i>
+                  </a>
+                  {% else %}
+                <a href="{{ seller.get_add_to_cart_url }}" class="btn btn-primary btn-md my-0 p">
+                    Add to cart
+                    <i class="fas fa-shopping-cart ml-1"></i>
+                  </a>
+                  {% endif %}
+              </td>
+              <td>
+                <a href="{{ seller.get_remove_from_cart_url }}" class="btn btn-danger btn-md my-0 p">
+                    Remove from cart
+                  </a>
+              </td>
+            </tr>
+            {% endfor %}
+
+          </table>
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+      <hr>
+
+
+      <!--Grid row-->
+      <div class="row d-flex justify-content-center wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 text-center">
+
+          <h4 class="my-4 h4">Product Reviews</h4>
+
+      <table class="table table-hover">
+        
+        <thead>
+        <tr>
+          <th>user</th>
+          <th>rating</th>
+          <th>review</th>
+        </tr>
+        </thead>
+        {% for fb in object.feedback.all %}
+        <tr>
+          <td>{{fb.user}}</td>
+          <td>{{fb.rating}}</td>
+          <td>{{fb.review}}</td>
+        </tr>
+        {% endfor %}
+      
+
+      </table>
+      </div>
+      </div>
+      
+      
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-12 mb-4">
+
+          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/11.jpg" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4">
+
+          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/12.jpg" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4">
+
+          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/13.jpg" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+    </div>
+  </main>
+
+{% endblock content %}

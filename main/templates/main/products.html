@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+    products-page
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+
+      <!-- Navbar brand -->
+      <span class="navbar-brand">Categories:</span>
+
+      <!-- Collapse button -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible content -->
+      <div class="collapse navbar-collapse" id="basicExampleNav">
+
+        <!-- Links -->
+        <ul class="navbar-nav mr-auto">
+          <!-- <li class="nav-item active"> -->
+            <li class="list-group-item">
+              <a class="btn btn-primary" href="{% url 'products' %}">All
+
+            </a>
+          </li>
+          {% for category in categories %}
+
+                    <li class="list-group-item">
+                        <a class="btn btn-primary" href="{% url 'products' %}?category={{ category.name }}">{{ category.name }}</a>
+                    </li>
+
+          {% endfor %}
+
+        </ul>
+        <!-- Links -->
+
+    
+
+    </nav>
+    <!--/.Navbar-->
+</div>
+
+<br/>
+<!-- <form action="" method="GET" value="{{request.GET.q}}"> -->
+<!-- <input type="search" name="q" value="{{request.GET.q}}" placeholder="Search pruduct name"/> -->
+<!-- <input type="submit" name="submit" value="Search"/> -->
+<!-- </form> -->
+<br/>
+<form  method="GET" action="" >
+  <input type="search" name="search" placeholder="Search by pruduct name"> 
+  <button  type="submit"> Search </button>
+</form>
+<br/>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Image</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in products %}
+        <tr>
+            <th scope="row"> {{ item.product_id }} </th>
+                <td>{{ item.product_name}}</td>
+                <td>
+                    <img alt="image" style="width:64px"  src="{{ item.product_img }}">
+                </td>      
+                <td>{{ item.get_rating }}</td>
+                <td>
+                    <strong>
+                        <a href="{{ item.get_absolute_url }}" > view detail
+                          <!-- <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span> -->
+                        </a>
+                      </strong>
+                </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

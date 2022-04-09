@@ -1,0 +1,103 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+    products-page
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <table class="table table-hover">
+    <thead>
+        <tr>
+
+            <th scope="col">Product</th>
+            <th scope="col">Current quantity</th>
+            <th scope="col">Current price</th>
+            <th scope="col">Discount price</th>
+            <th scope="col">Edit Inventory</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in object %}
+        
+        <tr>
+                <th scope="row"> {{ item.general_product.product_name }} </th>  
+                <td>
+                    {{ item.quantity }}
+                </td>
+                <td>
+                    {{ item.price }}
+                </td>
+                <td>
+                    {{ item.discount_price }}
+                </td>
+                <td>
+                    <strong>
+                        <a href="{{ item.edit_inventory_url }}" > Edit Inventory
+                        </a>
+                      </strong>
+                </td>
+            
+        </tr>
+        {% endfor %}
+        
+
+    </tbody>
+</table>
+
+<br>
+<br>
+
+<p> You can add new product below</p>
+<table class="table table-hover">
+
+<thead>
+    <tr>
+
+        <th scope="col">product</th>
+        <th scope="col">quantity</th>
+        <th scope="col">current price</th>
+        <th scope="col">discount price</th>
+
+    </tr>
+</thead>
+<tbody>
+<tr>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <td>     
+                <select name="general_product" id="general_product" required>
+                    {% for general in general_product %}
+                        <option value="{{ general.product_name }}" >{{ general.product_name }}</option>
+                    {% endfor %}
+                </select>
+        </td>
+
+        <td>     
+            <label for="quantity" ></label>
+            <input id="quantity" type="number" name="quantity">  
+        </td> 
+
+        <td>
+            <label for="price" ></label>
+            <input id="price" type="number" step="0.01" name="price">
+
+        </td>  
+        <td>
+            <label for="dprice" ></label>
+            <input id="dprice" type="number" step="0.01" name="dprice" >
+
+        </td>
+
+</tr>
+</table>
+
+<input type="submit" value="save new product">
+</form>
+
+</div>
+
+
+
+{% endblock %}

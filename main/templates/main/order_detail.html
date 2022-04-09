@@ -1,0 +1,42 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+    order-history
+{% endblock %}
+
+{% block content %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">name</th>
+            <th scope="col">ordered day</th>
+            
+            <th scope="col">price</th>
+            <th scope="col">quantity</th>
+            <th scope="col">fulfillment status</th>
+            <th scope="col">product detail view</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in object.items.all %}
+        <tr>
+            <th scope="row"> {{ item.product.general_product.product_name }} </th>
+
+                <td>{{ object.ordered_date}}</td>
+                <td>{{ item.product.price}}</td>
+                <td>{{ item.quantity}}</td>
+                <td>{{ item.fulfilled }}</td>
+                <td>
+                    <strong>
+                        <a href="{{ item.product.general_product.get_absolute_url }}" > product detail
+                          <!-- <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span> -->
+                        </a>
+                      </strong>
+                </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+    order-history
+{% endblock %}
+
+{% block content %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">total amount</th>
+            <th scope="col">number of items</th>
+            <th scope="col">fulfillment status</th>
+            <th scope="col">detail link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in object %}
+        <tr>
+            <th scope="row"> {{ item.ordered_date }} </th>
+                <td>{{ item.get_total}}</td>
+                <td>{{ item.get_numOfItem}}</td>
+                <td>{{ item.fulfilled }}</td>
+                <td>
+                    <strong>
+                        <a href="{{ item.get_absolute_url }}" > view detail
+                          <!-- <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span> -->
+                        </a>
+                      </strong>
+                </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

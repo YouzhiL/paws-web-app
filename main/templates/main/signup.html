@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+    signup
+{% endblock %}
+
+{% block content %}
+    
+
+<body class="text-center">
+    <form class="form-signin" method="POST">
+        {% csrf_token %}
+        <br>
+        <br>
+        <img class="mb-4" src="https://cdn.pixabay.com/photo/2017/09/25/13/12/cocker-spaniel-2785074__480.jpg" alt="" style="width:300px">
+        <h1 class="h3 mb-3 font-weight-normal">
+            Please Create your Account
+        </h1>
+
+        <!-- Form Fields -->
+        <label for="inputUsername" class="sr-only">
+            User Name
+        </label>
+        <input type="text" id="inputUsername" class="form-control" placeholder="User Name" name="username" required autofocus>
+        <br>
+
+        <label for="inputPassword1" class="sr-only">
+            Password
+        </label>
+        <input type="password" id="inputPassword1" class="form-control" placeholder="Password" name="password1" required autofocus>
+        <br>
+
+        <label for="inputPassword2" class="sr-only">
+            Password Confirmation
+        </label>
+        <input type="password" id="inputPassword2" class="form-control" placeholder="Confirm Password" name="password2" required autofocus>
+        <br>
+
+        <div class="checkbox mb-3">
+            <h6>Already have an Account?</h6>
+            <a class="btn btn-sm btn-secondary" href="{% url 'login' %}">Login</a>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
+    </form>
+</body>
+{% endblock %}
