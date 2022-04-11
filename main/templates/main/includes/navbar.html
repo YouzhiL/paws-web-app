@@ -71,19 +71,18 @@
         <ul class="navbar-nav">
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Hello, {{ user.username }}</a>
+                    <a class="nav-link" href="#">Hello, {{ request.user.username }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
                 <li class="nav-item">
-                    <!-- <a class="nav-link" href="{% url 'account' %}">Account</a> -->
                     <div class="dropdown">
                         <button onclick="showDropDown()" class="dropbtn">Account</button>
                         <div id="myDropdown" class="dropdown-content">
                           <a href="{% url 'order-summary' %}">Shopping Cart</a>
                           <a href="{% url 'history-order' %}">History Order</a>
-                          <a href="{% url 'account' %}">My Account</a>
+                          <a href="{{ user.get_account_url }}">My Account</a>
                           {% if user.is_seller %}
                             <a href="{% url 'inventory' %}">Inventory</a>
 

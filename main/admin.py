@@ -1,7 +1,8 @@
+from atexit import register
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from main.models import CustomUser, Product, OrderItem, Order, General_Product, ProductFB, Category
+from main.models import CustomUser, Product, OrderItem, Order, General_Product, ProductFB, Category, SellerFB
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -15,3 +16,4 @@ admin.site.register(General_Product)
 admin.site.register(CustomUser)
 admin.site.register(ProductFB)
 admin.site.register(Category)
+admin.site.register(SellerFB)

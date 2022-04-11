@@ -13,6 +13,96 @@
     {% if user.first_name %}
     <p> First Name: {{user.first_name}}</p>
     {% endif %}
+    {% if user == request.user %}
+    <h3>Your current balance is: {{user.balance}}</h3>
+    <form action="" method = "POST">
+        {% csrf_token %}
+        <label for="balance">top or withdraw</label>
+        <input type="number" id="balance" name="balance" value={{user.balance}}>
+        <input type="submit" value="submit">
+    </form>
+    <br>
+    <br>
+    <h3>feedback for products</h3>
+    
+    <table class="table table-hover">
+        
+        <thead>
+        <tr>
+          <th>user</th>
+          <th>rating</th>
+          <th>review</th>
+          <th>time</th>
+          <th>edit</th>
+        </tr>
+        </thead>
+        {% for object in productfb %}
+        {% for fb in object.feedback.all %}
+        {% if fb.user == request.user %}
+        <tr>
+          <td>{{object.product_name}}</td>
+          <td>{{fb.rating}}</td>
+          <td>{{fb.review}}</td>
+          <td>{{fb.date}}</td>
+          <td>
+            <a href="{{ object.edit_product_feedback_url }}" >
+                Edit Rating
+            </a>
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+      
+
+      </table>
+      {% endif %}
+
+    <br>
+    <br>
+
+
+   
+    {% if user.is_seller %}
+    <h3>{{user.username}}'s info</h3>
+    <table class="table table-hover">
+        
+        <thead>
+        <tr>
+          <th>address</th>
+          <th>email</th>
+        </tr>
+        </thead>
+        <tr>
+          <td>{{user.mailing_address}}</td>
+          <td>{{user.email}}</td>
+        </tr>
+    </table>
+
+    <a href="{{ user.get_seller_feedback_url }}" >
+        Add Rating to this seller
+    </a>
+    <table class="table table-hover">
+        
+        <thead>
+        <tr>
+          <th>user</th>
+          <th>rating</th>
+          <th>review</th>
+          <th>time</th>
+        </tr>
+        </thead>
+    {% for fb in sellerfb %}
+        <tr>
+          <td>{{fb.user}}</td>
+          <td>{{fb.rating}}</td>
+          <td>{{fb.review}}</td>
+          <td>{{fb.date}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% endif %}
 
     </div>
 </div>

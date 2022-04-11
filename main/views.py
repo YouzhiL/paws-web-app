@@ -7,9 +7,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404
 from numpy import product
-from main.models import CustomUser, Product, OrderItem, Order, Address, General_Product, ProductFB, Category
+from main.models import CustomUser, Product, OrderItem, Order, Address, General_Product, ProductFB, Category, SellerFB
 
-from main.forms import CustomUserCreationForm, CheckoutForm, CouponForm, RefundForm, PaymentForm, FeedbackForm,InventoryForm, AddProductForm
+from main.forms import CustomUserCreationForm, CheckoutForm, CouponForm, RefundForm, PaymentForm, FeedbackForm,InventoryForm, AddProductForm, SellerFeedbackForm
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, View
 from django.contrib.auth.decorators import login_required
@@ -18,6 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 import datetime
+from django.db.models import Q
 
 
 
@@ -83,11 +84,28 @@ def productspage(request):
     #         messages.success(request, f'Congratulations, you just bought {purchased_object.product_name} for {purchased_object.price}')
     #     add_to_bag = request.POST.get('add_to_bag')
 
+@login_required
+def upvote(request,pk):
+    feedback = ProductFB.objects.get(id=pk)
+    if request.user in feedback.upvoteby.all():
+        messages.warning(request, "You already upvoted this feedback")
+        return redirect("products")
+    else:
+        feedback.helpful += 1
+        feedback.upvoteby.add(request.user)
+        feedback.save()
+        messages.success(request, "Successfully upvote the feedback")
+        return redirect("products")
+
+
 class ItemDetailView(DetailView):
     model = General_Product
 
     template_name = "main/product_detail.html"
-    
+
+            
+
+
     # return render(self.request, 'main/product_detail.html', context)
     def get_context_data(self, *args, **kwargs):
         
@@ -112,10 +130,10 @@ class OrderSummaryView(LoginRequiredMixin, View):
             messages.warning(self.request, "You do not have an active order")
             return redirect("products")
 
-class OrderHistoryView(LoginRequiredMixin, View):
-    def get(self, *args, **kwargs):
-        try:
-            orders = Order.objects.filter(user=self.request.user)
+@login_required
+def OrderHistory(request):
+    try:
+            orders = Order.objects.filter(user = request.user)
             for order in orders:
                 fulfilled = True
                 for item in order.items.all():
@@ -123,14 +141,34 @@ class OrderHistoryView(LoginRequiredMixin, View):
                         fulfilled = False
                 order.fulfilled = fulfilled
                 order.save()
-            
-            context = {
+    except ObjectDoesNotExist:
+            messages.warning(request, "You do not have any submitted order")
+            return redirect("products")
+
+    query = request.GET.get('search')
+    start = request.GET.get('start')
+    end = request.GET.get('end')
+
+    if query:
+        # lookups= Q(product_name__icontains=query)
+        # products = General_Product.objects.filter(lookups)
+
+        orders = Order.objects.filter(
+                                    Q(items__product__general_product__product_name__icontains = query)
+                                    | Q(items__product__seller__username__icontains = query)
+                                    # | Q(ordered_date__icontains = query)
+                                    )
+        if not orders:
+            messages.warning(request, "Can not find order with your query")
+    if start and end:
+        orders = Order.objects.filter(ordered_date__range=[start, end])
+        if not orders:
+            messages.warning(request, "Can not find order with your query")
+    context = {
                 'object': orders
             }
-            return render(self.request, 'main/order_history.html', context)
-        except ObjectDoesNotExist:
-            messages.warning(self.request, "You do not have any submitted order")
-            return redirect("products")
+    return render(request, 'main/order_history.html', context)
+
 
 class SellerOrderView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
@@ -249,26 +287,58 @@ def product_feedback(request, slug):
         if form.is_valid():
             rating = form.cleaned_data.get('star')
             review = form.cleaned_data.get('review')
-            # fbq = item.feedback.all().get( user = request.user)
-            # if fbq:
-            #     messages.warning(request, "You have already given a feedback")
-            #     return redirect("product_detail", slug=slug)
-            # else:
+            guess = General_Product.objects.filter(product_name = item.product_name, feedback__user = request.user)
+            if guess.exists():
+                messages.warning(request, "You have already given a feedback")
+                return redirect("product_detail", slug=slug)
 
-            feedback = ProductFB.objects.create(user = request.user, israted = True, rating = int(rating), review = review)
-            # if not feedback.israted:
-                # feedback.israted = True
-                # feedback.rating = int(rating)
-                # feedback.review = review
-                # feedback.save()
+            feedback = ProductFB.objects.create(user = request.user, rating = int(rating), review = review)
             item.feedback.add(feedback)
             item.save()
             messages.success(request, "Successfully added review")
             return redirect("product_detail", slug=slug)
-            # else:
-            #     messages.warning(request, "You have already given a feedback")
-            #     return redirect("product_detail", slug=slug)
 
+def seller_feedback(request, pk):
+    item = SellerFB.objects.filter(seller__id = pk)
+    if request.method == 'GET':
+        return render(request, template_name='main/seller_feedback.html', context={'object':item})
+    
+
+    if request.method == 'POST':
+        form = SellerFeedbackForm(request.POST)
+        if form.is_valid():
+            rating = form.cleaned_data.get('star')
+            review = form.cleaned_data.get('review')
+            guess = SellerFB.objects.filter(seller__id = pk, user = request.user)
+            if guess.exists():
+                messages.warning(request, "You have already given a feedback")
+                return redirect("account", pk = pk)
+            seller = CustomUser.objects.get(id = pk)
+            feedback = SellerFB.objects.create(seller = seller, user = request.user, rating = int(rating), review = review)
+            feedback.save()
+            messages.success(request, "Successfully added review")
+            return redirect("account", pk = pk)
+
+@login_required
+def edit_feedback(request, slug):
+    item = get_object_or_404(General_Product, slug=slug)
+    if request.method == 'GET':
+        return render(request, template_name='main/product_feedback.html', context={'object':item})
+        return redirect("product_feedback",slug =slug)
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            rating = form.cleaned_data.get('star')
+            review = form.cleaned_data.get('review')
+            # product = General_Product.objects.get(product_name = item.product_name, feedback__user = request.user)
+            for feedback in item.feedback.all():
+                if feedback.user == request.user:
+                    item.feedback.remove(feedback)
+                    feedback = ProductFB.objects.create(user = request.user, rating = int(rating), review = review)
+                    item.feedback.add(feedback)
+                    item.save()
+            messages.success(request, "Successfully edit review")
+            return redirect("product_detail", slug=slug)
 
 @login_required
 def edit_inventory(request, slug):
@@ -381,18 +451,36 @@ def signuppage(request):
         else: 
             return redirect('signup')
 
-def accountpage(request):
-    if request.method == 'GET':
-        
-        if request.user.is_authenticated:
-            return render(request, template_name='main/account.html',context={'user':request.user})
 
-        else:
+@login_required
+def accountpage(request,pk):
+    user = CustomUser.objects.get(id = pk)
+    if request.user.is_authenticated:
+        productFB = General_Product.objects.filter(feedback__user = user).order_by('-feedback__date')
+        sellerFB = SellerFB.objects.filter(seller_id = pk).order_by('-date')
+        context = {
+                'productfb':productFB,
+                'sellerfb':sellerFB,
+                'user':user,
+            }
+        if request.method == 'GET':
+            
+            return render(request, template_name='main/account.html',context=context)
+        if request.method == 'POST':
+            balance = request.POST.get("balance")
+            if balance:
+                user.balance = balance
+                user.save()
+                context = {
+                    'productfb':productFB,
+                    'sellerfb':sellerFB,
+                    'user':user,
+                }
+                return render(request, template_name='main/account.html',context=context)
+            else:
+                return render(request, template_name='main/account.html',context=context)
+    else:
             return render(request, template_name='main/login.html')
-    
-    if request.method == 'POST':
-        pass
-
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:

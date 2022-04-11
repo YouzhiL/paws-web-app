@@ -45,9 +45,15 @@ class CheckoutForm(forms.Form):
 
     
 class FeedbackForm(forms.Form):
-
     star = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
     review = forms.CharField(required=False)
+
+
+
+class SellerFeedbackForm(forms.Form):
+    star = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
+    review = forms.CharField(required=False)
+
 
 class InventoryForm(forms.Form):
     quantity = forms.IntegerField(required=False)

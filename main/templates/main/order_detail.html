@@ -14,6 +14,7 @@
             
             <th scope="col">price</th>
             <th scope="col">quantity</th>
+            <th scope="col">seller name</th>
             <th scope="col">fulfillment status</th>
             <th scope="col">product detail view</th>
         </tr>
@@ -26,6 +27,7 @@
                 <td>{{ object.ordered_date}}</td>
                 <td>{{ item.product.price}}</td>
                 <td>{{ item.quantity}}</td>
+                <td>{{ item.product.seller.username}}</td>
                 <td>{{ item.fulfilled }}</td>
                 <td>
                     <strong>

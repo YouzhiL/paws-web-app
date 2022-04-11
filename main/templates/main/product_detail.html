@@ -102,7 +102,9 @@
             </thead>
             {% for seller in sellers %}
             <tr>
-              <td>{{ seller.seller }}</td>
+              <td>
+                <a href="{{ seller.seller.get_account_url }}"> {{seller.seller.username}} </a>
+              </td>
               <td>{{ seller.price }}</td> 
               <td>{{ seller.quantity }}</td>
 
@@ -152,6 +154,7 @@
           <th>user</th>
           <th>rating</th>
           <th>review</th>
+          <th>mark</th>
         </tr>
         </thead>
         {% for fb in object.feedback.all %}
@@ -159,6 +162,11 @@
           <td>{{fb.user}}</td>
           <td>{{fb.rating}}</td>
           <td>{{fb.review}}</td>
+          <td>
+            <a href="{{ fb.get_mark_url }}" >
+              Upvote
+          </a>
+          </td>
         </tr>
         {% endfor %}
       

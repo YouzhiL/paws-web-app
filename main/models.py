@@ -1,3 +1,4 @@
+from email.policy import default
 from random import random
 import string
 from tkinter import CASCADE
@@ -7,6 +8,8 @@ from django.contrib.auth.models import AbstractUser
 from django.shortcuts import reverse
 from django_extensions.db.fields import AutoSlugField
 
+
+
 ADDRESS_CHOICES = (
     ('B', 'Billing'),
     ('S', 'Shipping'),
@@ -14,8 +17,19 @@ ADDRESS_CHOICES = (
 
 class CustomUser(AbstractUser):
     mailing_address = models.CharField(max_length=200, blank=True)
+    email = models.CharField(max_length=200, blank=True)
     balance = models.FloatField(default=200.0)
     is_seller = models.BooleanField(default=False)
+    def get_seller_feedback_url(self):
+        return reverse("seller_feedback", kwargs={
+            'pk': self.id
+        })
+    def get_account_url(self):
+        return reverse("account", 
+        kwargs = {'pk':self.id}
+        )
+
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -26,9 +40,30 @@ class Category(models.Model):
 class ProductFB(models.Model):
     # product = models.ForeignKey(General_Product, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    israted = models.BooleanField(default=False)
+    # israted = models.BooleanField(default=False)
     rating = models.IntegerField(blank = True, null=True)
     review = models.CharField(blank=True, null=True, max_length=1024)
+    helpful = models.IntegerField(default=0)
+    upvoteby = models.ManyToManyField(CustomUser, related_name="upvoter")
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    def get_mark_url(self):
+        return reverse("upvote", kwargs={
+            'pk': self.id
+        })
+
+
+
+class SellerFB(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="buyer")
+    seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="seller")
+    rating = models.IntegerField(blank = True, null=True)
+    review = models.CharField(blank=True, null=True, max_length=1024)
+    helpful = models.IntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    
+
+
+
 
 class General_Product(models.Model):
     product_name = models.CharField(max_length=200)
@@ -46,6 +81,10 @@ class General_Product(models.Model):
     
     def get_product_feedback_url(self):
         return reverse("product_feedback", kwargs={
+            'slug': self.slug
+        })
+    def edit_product_feedback_url(self):
+        return reverse("edit_feedback", kwargs={
             'slug': self.slug
         })
     def get_rating(self):
@@ -89,12 +128,6 @@ class Product(models.Model):
     
 
     
-
-
-
-
-
-
 class OrderItem(models.Model):
     # id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
