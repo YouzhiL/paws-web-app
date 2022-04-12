@@ -28,6 +28,10 @@ class CustomUser(AbstractUser):
         return reverse("account", 
         kwargs = {'pk':self.id}
         )
+    def get_inventory_visual(self):
+        return reverse("inventory_visual",
+        kwargs = {'pk':self.id}
+        )
 
 
 
@@ -44,7 +48,7 @@ class ProductFB(models.Model):
     rating = models.IntegerField(blank = True, null=True)
     review = models.CharField(blank=True, null=True, max_length=1024)
     helpful = models.IntegerField(default=0)
-    upvoteby = models.ManyToManyField(CustomUser, related_name="upvoter")
+    upvoteby = models.ManyToManyField(CustomUser, related_name="upvoter",null = True,blank = True)
     date = models.DateTimeField(auto_now_add=True, blank=True)
     def get_mark_url(self):
         return reverse("upvote", kwargs={

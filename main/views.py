@@ -19,6 +19,9 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 import datetime
 from django.db.models import Q
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from collections import defaultdict
 
 
 
@@ -32,6 +35,35 @@ def is_valid_form(values):
         if field == '':
             valid = False
     return valid
+
+class ChartData(APIView):
+    authentication_classes = []
+    permission_classes = []
+   
+    def get(self, request, slug, format = None):
+        print(self.request)
+        items = OrderItem.objects.filter(product__seller__id = request.user.id, ordered = True)
+        inventory = defaultdict(int)
+
+        labels = []
+        chartdata = []
+        for item in items:
+            inventory[item.product.general_product.product_name] += item.quantity
+        labels = inventory.keys()
+        chartdata = inventory.values()
+        chartLabel = "inventory data"
+        print(len(labels))
+
+        data ={
+                     "labels":labels,
+                     "chartLabel":chartLabel,
+                     "chartdata":chartdata,
+             }
+        return Response(data)
+
+def inventory_visual(request,pk):
+    return render(request, template_name="main/inventory_visual.html")
+
 
 def homepage(request):
     return render(request, template_name='main/home.html')
@@ -77,6 +109,7 @@ def productspage(request):
 @login_required
 def upvote(request,pk):
     feedback = ProductFB.objects.get(id=pk)
+    product = General_Product.objects.get(feedback = feedback)
     if request.user in feedback.upvoteby.all():
         messages.warning(request, "You already upvoted this feedback")
         return redirect("products")
@@ -85,7 +118,7 @@ def upvote(request,pk):
         feedback.upvoteby.add(request.user)
         feedback.save()
         messages.success(request, "Successfully upvote the feedback")
-        return redirect("products")
+        return redirect("product_detail", slug = product.slug)
 
 
 class ItemDetailView(DetailView):
@@ -678,12 +711,27 @@ class InventoryView(View):
             general = General_Product.objects.all()
             category = Category.objects.all()
             form = AddProductForm()
+            id = self.request.user.id
+            items = OrderItem.objects.filter(product__seller= self.request.user, ordered = True)
+
+            inventory = defaultdict(int)
+
+        # labels = []
+        # chartdata = []
+            for item in items:
+                inventory[item.product.general_product.product_name] += item.quantity
+            labels = list(inventory.keys())
+            chartdata = list(inventory.values())
+            print(labels)
+                
 
             context = {
                 'object': object,
                 'general_product':general,
-                'form':form
-    
+                'form':form,
+                'labels':labels,
+                'datas': chartdata,
+
             }
             return render(self.request, "main/inventory.html", context = context)
         except ObjectDoesNotExist:

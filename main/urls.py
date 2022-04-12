@@ -32,5 +32,6 @@ urlpatterns = [
     path('seller-detail-order/<slug>/', views.SellerOrderDetailView.as_view(), name = 'seller-detail-order'),
     path('fulfill/<pk>/', views.fulfill,name='fulfill'),
     path('upvote/<pk>/', views.upvote,name='upvote'),
-    
+    path('api/<slug:id>/', views.ChartData.as_view()),
+    path('get_inventory_visual/<pk>/', views.inventory_visual,name='inventory_visual'),
 ]
