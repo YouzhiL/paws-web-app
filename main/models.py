@@ -17,8 +17,8 @@ ADDRESS_CHOICES = (
 
 class CustomUser(AbstractUser):
     mailing_address = models.CharField(max_length=200, blank=True)
-    email = models.CharField(max_length=200, blank=True)
-    balance = models.FloatField(default=200.0)
+    email = models.CharField(max_length=200, null=False,blank=False,unique=True)
+    balance = models.FloatField(default=0.00)
     is_seller = models.BooleanField(default=False)
     def get_seller_feedback_url(self):
         return reverse("seller_feedback", kwargs={
@@ -71,7 +71,7 @@ class General_Product(models.Model):
     category = models.ForeignKey(Category, default=False, null=True, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
     slug = AutoSlugField(populate_from=['product_name'])
-    feedback = models.ManyToManyField(ProductFB)
+    feedback = models.ManyToManyField(ProductFB,null=True,blank=True)
 
     def __str__(self):
         return self.product_name

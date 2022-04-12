@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404
 from numpy import product
 from main.models import CustomUser, Product, OrderItem, Order, Address, General_Product, ProductFB, Category, SellerFB
 
-from main.forms import CustomUserCreationForm, CheckoutForm, CouponForm, RefundForm, PaymentForm, FeedbackForm,InventoryForm, AddProductForm, SellerFeedbackForm
+from main.forms import CustomUserCreationForm, CheckoutForm, CouponForm, RefundForm, PaymentForm, FeedbackForm,InventoryForm, AddProductForm, SellerFeedbackForm, CustomUserChangeForm
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, View
 from django.contrib.auth.decorators import login_required
@@ -38,16 +38,6 @@ def homepage(request):
 
 
 def productspage(request):
-    # items = [
-    # {
-    #     'name' : 'Phone',
-    #     'price' : '500'
-    # },
-    # {
-    #     'name' : 'Laptop',
-    #     'price' : '1000'
-    # }
-    # ]
 
     query = request.GET.get('search')
     category = request.GET.get('category')
@@ -133,7 +123,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
 @login_required
 def OrderHistory(request):
     try:
-            orders = Order.objects.filter(user = request.user)
+            orders = Order.objects.filter(user = request.user).order_by('-ordered_date')
             for order in orders:
                 fulfilled = True
                 for item in order.items.all():
@@ -157,11 +147,11 @@ def OrderHistory(request):
                                     Q(items__product__general_product__product_name__icontains = query)
                                     | Q(items__product__seller__username__icontains = query)
                                     # | Q(ordered_date__icontains = query)
-                                    )
+                                    ).order_by('-ordered_date')
         if not orders:
             messages.warning(request, "Can not find order with your query")
     if start and end:
-        orders = Order.objects.filter(ordered_date__range=[start, end])
+        orders = Order.objects.filter(ordered_date__range=[start, end]).order_by('-ordered_date')
         if not orders:
             messages.warning(request, "Can not find order with your query")
     context = {
@@ -192,7 +182,6 @@ class SellerOrderDetailView(LoginRequiredMixin, DetailView):
 
 
 def fulfill(request, pk):
-    # print(id)
     item = OrderItem.objects.get(id = pk)
     item.fulfilled = True
     item.fulfill_date = datetime.datetime.now()
@@ -203,15 +192,6 @@ def fulfill(request, pk):
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
-
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super(OrderDetailView,
-    #          self).get_context_data(*args, **kwargs)
-    #     # add extra field 
-    #     context["category"] = "MISC"        
-    #     return context
-    #     context = super(OrderDetailView,
-    #          self).get_context_data(*args, **kwargs)
     template_name = "main/order_detail.html"
 
 
@@ -324,7 +304,7 @@ def edit_feedback(request, slug):
     item = get_object_or_404(General_Product, slug=slug)
     if request.method == 'GET':
         return render(request, template_name='main/product_feedback.html', context={'object':item})
-        return redirect("product_feedback",slug =slug)
+
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
@@ -421,8 +401,9 @@ def loginpage(request):
         return render(request, template_name='main/login.html')
     if request.method == 'POST':
         username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-        user = authenticate(username = username, password = password)
+        user = authenticate(username = username, password = password,email=email)
         if user is not None:
             login(request, user)
             return redirect('products')
@@ -444,8 +425,9 @@ def signuppage(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password1')
-            user = authenticate(username = username, password = password)
+            user = authenticate(email = email, username = username, password = password)
             login(request,user)
             return redirect('home')
         else: 
@@ -466,21 +448,44 @@ def accountpage(request,pk):
         if request.method == 'GET':
             
             return render(request, template_name='main/account.html',context=context)
-        if request.method == 'POST':
-            balance = request.POST.get("balance")
-            if balance:
-                user.balance = balance
-                user.save()
-                context = {
-                    'productfb':productFB,
-                    'sellerfb':sellerFB,
-                    'user':user,
-                }
+        elif request.method == 'POST':
+            form = CustomUserChangeForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                # balance = request.POST.get("balance")
+                # username = form.cleaned_data.get('username')
+                # email = form.cleaned_data.get('email')
+                # password = form.cleaned_data.get('password')
+                # address = form.cleaned_data.get('mailing_address')
+                # first_name = form.cleaned_data.get('fisrt_name')
+                # last_name = form.cleaned_data.get('last_name')
+                # if balance:
+                #     user.balance = balance
+                # if username:
+                #     user.username = username
+                # if email:
+                #     user.email = email
+                # if password:
+                #     user.password = password
+                # if address:
+                #     user.mailing_address = address
+                # if first_name:
+                #     user.first_name = first_name
+                # if last_name:
+                #     user.last_name = last_name
+                # context = {
+                #         'productfb':productFB,
+                #         'sellerfb':sellerFB,
+                #         'user':user,
+                #     }  
+                # user.save()  
                 return render(request, template_name='main/account.html',context=context)
             else:
+                messages.warning(request, "Invalid input, please check")
                 return render(request, template_name='main/account.html',context=context)
+
     else:
-            return render(request, template_name='main/login.html')
+        return render(request, template_name='main/login.html')
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:

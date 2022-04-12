@@ -8,19 +8,19 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username',)
+        fields = ('email','username')
 
 
 class CustomUserChangeForm(UserChangeForm):
-
+    
     class Meta:
         model = CustomUser
-        fields = ('username',)
+        fields = ('email','username','first_name','last_name','mailing_address','password','balance')
 
-PAYMENT_CHOICES = (
-    ('S', 'Stripe'),
-    ('P', 'PayPal')
-)
+# PAYMENT_CHOICES = (
+#     ('S', 'Stripe'),
+#     ('P', 'PayPal')
+# )
 
 
 class CheckoutForm(forms.Form):
@@ -40,8 +40,8 @@ class CheckoutForm(forms.Form):
     set_default_billing = forms.BooleanField(required=False)
     use_default_billing = forms.BooleanField(required=False)
 
-    payment_option = forms.ChoiceField(
-        widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
+    # payment_option = forms.ChoiceField(
+    #     widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
 
     
 class FeedbackForm(forms.Form):

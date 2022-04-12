@@ -9,21 +9,54 @@
 <div class="container">
 
     <div class="table-responsive text-nowrap">
-    <h2>{{user}}'s Account</h2>
-    {% if user.first_name %}
-    <p> First Name: {{user.first_name}}</p>
-    {% endif %}
+    <h2>Welcome to {{user}}'s Account</h2>
+    <p> You can edit your profile and see the feedbacks here</p>
+    <br>
+    <br>
+
     {% if user == request.user %}
-    <h3>Your current balance is: {{user.balance}}</h3>
+    <h3>Profile</h3>
     <form action="" method = "POST">
-        {% csrf_token %}
-        <label for="balance">top or withdraw</label>
+      {% csrf_token %}
+    <table class="table table-hover">
+      
+      <tr><td>
+        <label for="username">username</label>
+        <input type="string" id="username" name="username" value={{user.username}}>
+      </td></tr>
+      <tr><td>
+        <label for="email">username</label>
+        <input type="string" id="email" name="email" value={{user.email}}>
+      </td></tr>
+      <tr><td>
+        <label for="first_name">first name</label>
+        <input type="string" id="first_name" name="first_name" value={{user.first_name}}>
+      </td></tr>
+      <tr><td>
+        <label for="last_name">last name</label>
+        <input type="string" id="last_name" name="last_name" value={{user.last_name}}>
+      </td></tr>
+      <tr><td>
+        <label for="mailing_address">address</label>
+        <input type="string" id="mailing_address" name="mailing_address" value={{user.mailing_address}}>
+      </td></tr>
+      <tr><td>
+        <label for="password">password</label>
+        <input type="string" id="password" name="password" value={{user.password}}>
+      </td></tr>
+      <tr><td>
+        <label for="balance">balance</label>
         <input type="number" id="balance" name="balance" value={{user.balance}}>
-        <input type="submit" value="submit">
+      </td></tr>
+      </table>
+      <input type="submit" value="save">
     </form>
     <br>
     <br>
-    <h3>feedback for products</h3>
+        
+
+    
+    <h3>Feedback you give</h3>
     
     <table class="table table-hover">
         
@@ -79,9 +112,7 @@
         </tr>
     </table>
 
-    <a href="{{ user.get_seller_feedback_url }}" >
-        Add Rating to this seller
-    </a>
+    <h3>Feedbacks {{user.username}} recieved</h3>
     <table class="table table-hover">
         
         <thead>
@@ -101,6 +132,9 @@
         </tr>
         {% endfor %}
     </table>
+    <a href="{{ user.get_seller_feedback_url }}" >
+      Add Rating to this seller
+    </a>
 
     {% endif %}
 

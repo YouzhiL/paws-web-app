@@ -4,13 +4,18 @@
 {% block content %}
 
   <main >
+    
     <div class="container wow fadeIn">
+      <div class="col-md-4 mb-4">
+        {% include "main/order_snippet.html" %}
+      </div>
       <h2 class="my-5 h2 text-center">Checkout form</h2>
       <div class="row">
         <div class="col-md-8 mb-4">
           <div class="card">
             <form method="POST" class="card-body">
               {% csrf_token %}
+
 
               <h3>Shipping address</h3>
 
@@ -54,7 +59,7 @@
                   <label class="custom-control-label" for="set_default_shipping">Save as default shipping address</label>
                 </div>
 
-              </div>
+
 
               {% if default_shipping_address %}
               <div class="custom-control custom-checkbox">
@@ -101,7 +106,7 @@
                   <label class="custom-control-label" for="set_default_billing">Save as default billing address</label>
                 </div>
 
-              </div>
+
 
               {% if default_billing_address %}
               <div class="custom-control custom-checkbox">
@@ -111,16 +116,7 @@
               {% endif %}
               <hr>
 
-              <h3>Payment option</h3>
-
-              <div class="d-block my-3">
-                {% for value, name in form.fields.payment_option.choices %}
-                <div class="custom-control custom-radio">
-                  <input id="{{ name }}" name="payment_option" value="{{ value }}" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
-                </div>
-                {% endfor %}
-              </div>
+     
 
               <hr class="mb-4">
               <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
@@ -131,9 +127,7 @@
 
         </div>
 
-        <div class="col-md-4 mb-4">
-          {% include "main/order_snippet.html" %}
-        </div>
+        
 
       </div>
 
