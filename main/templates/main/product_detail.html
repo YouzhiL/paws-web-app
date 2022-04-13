@@ -11,7 +11,7 @@
         <!--Grid column-->
         <div class="col-md-6 mb-4">
 
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/14.jpg" class="img-fluid" alt="img">
+          <img src="{{ object.product_img }}" class="img-fluid" alt="img">
 
         </div>
         <!--Grid column-->
@@ -157,7 +157,7 @@
           <th>mark</th>
         </tr>
         </thead>
-        {% for fb in object.feedback.all %}
+        {% for fb in feedback %}
         <tr>
           <td>{{fb.user}}</td>
           <td>{{fb.rating}}</td>
@@ -183,10 +183,25 @@
   <div class="col-md-6 text-center">
 
     <h4 class="my-4 h4">You may also like</h4>
-    {% for item in recommend %}
-    <a href="{{item.get_detail_viw_url}}">{{item.general_product.product_name}}</a>
-    <br>
-    {% endfor %}
+    <table class="table table-hover">
+        
+    
+      {% for item in recommend %}
+      <tr>
+        <td>
+          <a href="{{item.get_detail_viw_url}}">{{item.general_product.product_name}}</a>
+        </td>
+        
+        <td>{{item.general_product.product_img}}</td>
+
+      </tr>
+      {% endfor %}
+    
+
+    </table>
+   
+    
+
     <br>
     <br>
     <br>

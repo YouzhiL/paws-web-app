@@ -127,20 +127,20 @@ class ItemDetailView(DetailView):
 
     template_name = "main/product_detail.html"
 
-            
-
-
-    # return render(self.request, 'main/product_detail.html', context)
     def get_context_data(self, *args, **kwargs):
 
         init_context = super(ItemDetailView,
              self).get_context_data(*args, **kwargs)
         category = init_context['object'].category
         recommend = Product.objects.filter(general_product__category = category)
+        sellers = Product.objects.filter(general_product = init_context['object'])
+        object = init_context['object']
+        feedback = object.feedback.all().order_by('-helpful')
         # add extra field 
-        context = {'object': init_context['object'], 
-                'sellers': Product.objects.filter(general_product = init_context['object']),
+        context = {'object': object, 
+                'sellers': sellers,
                 'recommend':recommend,
+                'feedback': feedback,
                 }
         return context
 
