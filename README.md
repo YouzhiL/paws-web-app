@@ -34,8 +34,7 @@ Run following commands to migrate
 python manage.py makemigrations
 python manage.py migrate
 ```
-
-Run following commands to import data
+Change the directory in the import_data to that of user's and run the following commands to import data
 ```
 python manage.py runscript import_data
 ```
