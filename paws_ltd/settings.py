@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'crispy_forms',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -91,7 +92,7 @@ DATABASES = {
         # },
         'NAME': 'pawsApp',
         'USER': 'postgres',
-        'PASSWORD': '87356636',
+        'PASSWORD': 'Welcome@911',
         # 'HOST': '127.0.0.1',
         'HOST': 'localhost',
         'PORT': '5432',
