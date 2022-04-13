@@ -22,7 +22,7 @@ def gen_address(num_users):
     street_list = []
     state_list = []
     zip_list = []
-    with open('/Users/tl/Desktop/paws-web-app-main/data/address.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/address.csv', 'w') as f:
         writer = get_csv_writer(f)
         for uid in range(num_users):
             apartment = fake.building_number()
@@ -44,7 +44,7 @@ def gen_users(num_users, apartment_list, street_list, state_list, zip_list):
     seller_list =[]
     address_list = []
     email_list = []
-    with open('/Users/tl/Desktop/paws-web-app-main/data/customuser.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/customuser.csv', 'w') as f:
         writer = get_csv_writer(f)
         for uid in range(num_users):
             profile = fake.profile()
@@ -67,7 +67,7 @@ def gen_users(num_users, apartment_list, street_list, state_list, zip_list):
 
 def gen_category(num_products):
     category_list = []
-    with open('/Users/tl/Desktop/paws-web-app-main/data/category.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/category.csv', 'w') as f:
         writer = get_csv_writer(f)
         for pid in range(num_users):
             name = fake.random_element(elements=('food', 'toys', 'treats', 'beds'))
@@ -76,7 +76,7 @@ def gen_category(num_products):
     return category_list
 
 def gen_productfb(num_users, name_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/productfb.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/productfb.csv', 'w') as f:
         writer = get_csv_writer(f)
         for uid in range(num_users):
             user = fake.random_element(elements=name_list)  
@@ -94,7 +94,7 @@ def gen_productfb(num_users, name_list):
     return
 
 def gen_sellerfb(num_users, seller_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/sellerfb.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/sellerfb.csv', 'w') as f:
         writer = get_csv_writer(f)
         for uid in range(num_users):
             user = fake.random_element(elements=name_list)
@@ -113,7 +113,7 @@ def gen_sellerfb(num_users, seller_list):
 
 def gen_generalpd(num_products, category_list):
     pd_name_list = []
-    with open('/Users/tl/Desktop/paws-web-app-main/data/generalpd.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/generalpd.csv', 'w') as f:
         writer = get_csv_writer(f)
         for pid in range(num_products):
             # rand_name = fake.sentence(nb_words=4)[:-1]
@@ -139,7 +139,7 @@ def gen_generalpd(num_products, category_list):
     return pd_name_list
 
 def gen_products(num_products, pd_name_list, seller_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/product.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/product.csv', 'w') as f:
         writer = get_csv_writer(f)
         for pid in range(num_products):
             general_pd = pd_name_list[pid]
@@ -152,7 +152,7 @@ def gen_products(num_products, pd_name_list, seller_list):
     return
 
 def gen_orderitem(num_order, name_list, pd_name_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/orderitem.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/orderitem.csv', 'w') as f:
         writer = get_csv_writer(f)
         for oid in range(num_order):
             user = fake.random_element(elements=name_list)
@@ -166,7 +166,7 @@ def gen_orderitem(num_order, name_list, pd_name_list):
 
 def gen_coupon(num_coupon):
     coupon_list = []
-    with open('/Users/tl/Desktop/paws-web-app-main/data/coupon.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/coupon.csv', 'w') as f:
         writer = get_csv_writer(f)
         for i in range(num_coupon):
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
@@ -177,7 +177,7 @@ def gen_coupon(num_coupon):
 
 
 def gen_order(num_order, name_list, pd_name_list, address_list, coupon_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/order.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/order.csv', 'w') as f:
         writer = get_csv_writer(f)
         for oid in range(num_order):
             user = fake.random_element(elements=name_list)
@@ -200,7 +200,7 @@ def gen_order(num_order, name_list, pd_name_list, address_list, coupon_list):
     return
 
 def gen_payment(num_order, name_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/payment.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/payment.csv', 'w') as f:
         writer = get_csv_writer(f)
         for oid in range(num_order):
             stripe_charge_id = ''.join(random.choices(string.digits, k=12))
@@ -211,7 +211,7 @@ def gen_payment(num_order, name_list):
     return
 
 def gen_refund(num_order, pd_name_list, email_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/refund.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/refund.csv', 'w') as f:
         writer = get_csv_writer(f)
         for oid in range(num_order):
             order = fake.random_element(elements=pd_name_list)
@@ -222,7 +222,7 @@ def gen_refund(num_order, pd_name_list, email_list):
     return
 
 def gen_cart(num_users, name_list, pd_name_list):
-    with open('/Users/tl/Desktop/paws-web-app-main/data/refund.csv', 'w') as f:
+    with open('/Users/tl/Desktop/paws-web-app/data/refund.csv', 'w') as f:
         writer = get_csv_writer(f)
         for uid in range(num_users):
             user = fake.random_element(elements=name_list)

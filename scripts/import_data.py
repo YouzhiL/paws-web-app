@@ -3,7 +3,7 @@ from main.models import CustomUser, Category, ProductFB, SellerFB, General_Produ
 
 def run():
     
-    with open("/Users/tl/Desktop/paws-web-app-main/data/customuser.csv") as file_customuser:
+    with open("/Users/tl/Desktop/paws-web-app/data/customuser.csv") as file_customuser:
         reader1 = csv.reader(file_customuser)
 
         CustomUser.objects.all().delete()
@@ -21,7 +21,7 @@ def run():
             )
             customuser.save()
 
-    with open("/Users/tl/Desktop/paws-web-app-main/data/category.csv") as file_category:
+    with open("/Users/tl/Desktop/paws-web-app/data/category.csv") as file_category:
         reader2 = csv.reader(file_category)
 
         Category.objects.all().delete()
@@ -32,7 +32,7 @@ def run():
             )
             category.save()
     
-    with open("/Users/tl/Desktop/paws-web-app-main/data/productfb.csv") as file_productfb:
+    with open("/Users/tl/Desktop/paws-web-app/data/productfb.csv") as file_productfb:
         reader3 = csv.reader(file_productfb)
 
         ProductFB.objects.all().delete()
@@ -52,7 +52,7 @@ def run():
             for upvoteby in upvoteby_list:
                 productfb.upvoteby.add(upvoteby)
 
-    with open("/Users/tl/Desktop/paws-web-app-main/data/sellerfb.csv") as file_sellerfb:
+    with open("/Users/tl/Desktop/paws-web-app/data/sellerfb.csv") as file_sellerfb:
         reader4 = csv.reader(file_sellerfb)
 
         SellerFB.objects.all().delete()
@@ -71,7 +71,7 @@ def run():
             )
             sellerfb.save()
 
-    with open("/Users/tl/Desktop/paws-web-app-main/data/generalpd.csv") as file_generalpd:
+    with open("/Users/tl/Desktop/paws-web-app/data/generalpd.csv") as file_generalpd:
         reader5 = csv.reader(file_generalpd)
         General_Product.objects.all().delete()
         Category.objects.all().delete()
@@ -92,7 +92,7 @@ def run():
             for feedback in fb_list:
                 generalpd.feedback.add(feedback)
 
-    with open("/Users/tl/Desktop/paws-web-app-main/data/product.csv") as file_product:
+    with open("/Users/tl/Desktop/paws-web-app/data/product.csv") as file_product:
         reader6 = csv.reader(file_product)
     
         Product.objects.all().delete()
