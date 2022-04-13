@@ -38,5 +38,17 @@ Change the directory in the import_data to that of user's and run the following 
 ```
 python manage.py runscript import_data
 ```
+Note if you run into 'AssertionError: database connection isn't set to UTC' error, it's lastest psycopg2 causing this. You can either run
+
+```
+pip install psycopg2==2.8.6
+```
+
+or 
+
+```
+pip install psycopg2-binary==2.8.6
+```
+Finally, 
 
 Run `python manage.py runserver` to browse the webpage
