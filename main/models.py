@@ -76,6 +76,7 @@ class General_Product(models.Model):
     description = models.TextField(blank=True)
     slug = AutoSlugField(populate_from=['product_name'])
     feedback = models.ManyToManyField(ProductFB,null=True,blank=True)
+    proved = models.BooleanField(default=True)
 
     def __str__(self):
         return self.product_name
@@ -127,6 +128,10 @@ class Product(models.Model):
         })
     def edit_inventory_url(self):
         return reverse("edit-inventory", kwargs={
+            'slug': self.slug
+        })
+    def get_detail_view_url(self):
+        return reverse("product_detail", kwargs={
             'slug': self.slug
         })
     
@@ -188,8 +193,8 @@ class Order(models.Model):
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     fulfilled = models.BooleanField(default=False)
-    being_delivered = models.BooleanField(default=False)
-    received = models.BooleanField(default=False)
+    # being_delivered = models.BooleanField(default=False)
+    # received = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
     slug = AutoSlugField(populate_from=['user', 'ordered_date'])
@@ -244,15 +249,15 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
 
-class Payment(models.Model):
-    stripe_charge_id = models.CharField(max_length=50)
-    user = models.ForeignKey(CustomUser,
-                             on_delete=models.SET_NULL, blank=True, null=True)
-    amount = models.FloatField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+# class Payment(models.Model):
+#     stripe_charge_id = models.CharField(max_length=50)
+#     user = models.ForeignKey(CustomUser,
+#                              on_delete=models.SET_NULL, blank=True, null=True)
+#     amount = models.FloatField()
+#     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.user.username
+#     def __str__(self):
+#         return self.user.username
 
 
 class Coupon(models.Model):
@@ -262,16 +267,13 @@ class Coupon(models.Model):
     def __str__(self):
         return self.code
 
-class Refund(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    reason = models.TextField()
-    accepted = models.BooleanField(default=False)
-    email = models.EmailField()
+# class Refund(models.Model):
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+#     reason = models.TextField()
+#     accepted = models.BooleanField(default=False)
+#     email = models.EmailField()
 
-class Cart(models.Model):
-    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
+
 
 
     

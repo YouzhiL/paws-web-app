@@ -67,7 +67,11 @@ class AddProductForm(forms.Form):
     price = forms.FloatField(required=False)
     dprice = forms.FloatField(required=False)
 
-
+class CreateProductForm(forms.Form):
+    category = forms.CharField(required=False)
+    name = forms.CharField(required=False)
+    description = forms.CharField(required=False)
+    image = forms.CharField(required=False)
     
 class CouponForm(forms.Form):
     code = forms.CharField(widget=forms.TextInput(attrs={

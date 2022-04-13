@@ -33,5 +33,7 @@ urlpatterns = [
     path('fulfill/<pk>/', views.fulfill,name='fulfill'),
     path('upvote/<pk>/', views.upvote,name='upvote'),
     path('api/<slug:id>/', views.ChartData.as_view()),
-    path('get_inventory_visual/<pk>/', views.inventory_visual,name='inventory_visual'),
+    # path('get_inventory_visual/<pk>/', views.inventory_visual,name='inventory_visual'),
+    path('add-coupon', views.AddCouponView.as_view(),name='add-coupon'),
+    path('create_product', views.create_product,name='create_product'),
 ]

@@ -1,0 +1,63 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+    create-product
+{% endblock %}
+
+{% block content %}
+
+<h2 class="my-5 h2 text-center">Create new product</h2>
+<br>
+<br>
+
+<table class="table table-hover">
+
+<thead>
+    <tr>
+
+        <th scope="col">category</th>
+        <th scope="col">name</th>
+        <th scope="col">description</th>
+        <th scope="col">image</th>
+
+    </tr>
+</thead>
+<tbody>
+<tr>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <td>     
+                <select name="category" id="category" required>
+                    {% for cat in object %}
+                        <option value="{{ cat.name }}" >{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+        </td>
+
+        <td>     
+            <label for="name" ></label>
+            <input id="name" type="text" name="name">  
+        </td> 
+
+        <td>
+            <label for="description" ></label>
+            <input id="description" type="text" name="text">
+
+        </td>  
+        <td>
+            <label for="image" ></label>
+            <input id="image" type="text" name="image" >
+
+        </td>
+
+</tr>
+</table>
+
+<input type="submit" value="submit request">
+</form>
+<br>
+<br>
+
+<p>Thanks for your submission. Paws will review your request within 3 business days</p>
+{% endblock %}

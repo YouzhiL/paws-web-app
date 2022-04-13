@@ -1,5 +1,6 @@
 from math import prod
 from multiprocessing import context
+from unicodedata import category
 from urllib import request
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
@@ -7,9 +8,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, get_object_or_404
 from numpy import product
-from main.models import CustomUser, Product, OrderItem, Order, Address, General_Product, ProductFB, Category, SellerFB
+from main.models import CustomUser, Product, OrderItem, Order, Address, General_Product, ProductFB, Category, SellerFB, Coupon
 
-from main.forms import CustomUserCreationForm, CheckoutForm, CouponForm, RefundForm, PaymentForm, FeedbackForm,InventoryForm, AddProductForm, SellerFeedbackForm, CustomUserChangeForm
+from main.forms import CustomUserCreationForm, CheckoutForm, CouponForm, RefundForm, PaymentForm, FeedbackForm,InventoryForm, AddProductForm, SellerFeedbackForm, CustomUserChangeForm, CreateProductForm
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, View
 from django.contrib.auth.decorators import login_required
@@ -76,11 +77,11 @@ def productspage(request):
     if query:
         # lookups= Q(product_name__icontains=query)
         # products = General_Product.objects.filter(lookups)
-        products = General_Product.objects.filter(product_name__icontains=query)
+        products = General_Product.objects.filter(product_name__icontains=query, proved=True)
 
     
     elif category:
-        products = General_Product.objects.filter(category__name=category)
+        products = General_Product.objects.filter(category__name=category, proved=True)
         
         # page_num = request.GET.get("page")
         # paginator = Paginator(products, 2)
@@ -91,7 +92,7 @@ def productspage(request):
         # except EmptyPage:
         #     products = paginator.page(paginator.num_pages)             
     else:
-        products = General_Product.objects.all()
+        products = General_Product.objects.filter(proved = True)
     categories = Category.objects.all()
     
     return render(request, template_name='main/products.html', context={'products':products, 'categories': categories})
@@ -131,13 +132,16 @@ class ItemDetailView(DetailView):
 
     # return render(self.request, 'main/product_detail.html', context)
     def get_context_data(self, *args, **kwargs):
-        
-        # context = items.filter(general_product = model)
+
         init_context = super(ItemDetailView,
              self).get_context_data(*args, **kwargs)
-
+        category = init_context['object'].category
+        recommend = Product.objects.filter(general_product__category = category)
         # add extra field 
-        context = {'object': init_context['object'], 'sellers': Product.objects.filter(general_product = init_context['object'])}
+        context = {'object': init_context['object'], 
+                'sellers': Product.objects.filter(general_product = init_context['object']),
+                'recommend':recommend,
+                }
         return context
 
 
@@ -156,42 +160,53 @@ class OrderSummaryView(LoginRequiredMixin, View):
 @login_required
 def OrderHistory(request):
     try:
-            orders = Order.objects.filter(user = request.user).order_by('-ordered_date')
-            for order in orders:
-                fulfilled = True
-                for item in order.items.all():
-                    if not item.fulfilled:
-                        fulfilled = False
-                order.fulfilled = fulfilled
-                order.save()
+        orders = Order.objects.filter(user = request.user).order_by('-ordered_date')
+        for order in orders:
+            fulfilled = True
+            for item in order.items.all():
+                if not item.fulfilled:
+                    fulfilled = False
+            order.fulfilled = fulfilled
+            order.save()
+        orders = Order.objects.filter(user = request.user).order_by('-ordered_date')
+        category = defaultdict(int)
+        for order in orders:
+            for item in order.items.all():
+                category[item.product.general_product.category.name] += 1
+        labels = list(category.keys())
+        datas = list(category.values())
+
+    
+
+        query = request.GET.get('search')
+        start = request.GET.get('start')
+        end = request.GET.get('end')
+
+        if query:
+            # lookups= Q(product_name__icontains=query)
+            # products = General_Product.objects.filter(lookups)
+
+            orders = Order.objects.filter(
+                                        Q(items__product__general_product__product_name__icontains = query)
+                                        | Q(items__product__seller__username__icontains = query)
+                                        # | Q(ordered_date__icontains = query)
+                                        ).order_by('-ordered_date')
+            if not orders:
+                messages.warning(request, "Can not find order with your query")
+                
+        if start and end:
+            orders = Order.objects.filter(ordered_date__range=[start, end]).order_by('-ordered_date')
+            if not orders:
+                messages.warning(request, "Can not find order with your query")
+        context = {
+                    'object': orders,
+                    'labels': labels,
+                    'datas': datas,
+                }
+        return render(request, 'main/order_history.html', context)
     except ObjectDoesNotExist:
             messages.warning(request, "You do not have any submitted order")
             return redirect("products")
-
-    query = request.GET.get('search')
-    start = request.GET.get('start')
-    end = request.GET.get('end')
-
-    if query:
-        # lookups= Q(product_name__icontains=query)
-        # products = General_Product.objects.filter(lookups)
-
-        orders = Order.objects.filter(
-                                    Q(items__product__general_product__product_name__icontains = query)
-                                    | Q(items__product__seller__username__icontains = query)
-                                    # | Q(ordered_date__icontains = query)
-                                    ).order_by('-ordered_date')
-        if not orders:
-            messages.warning(request, "Can not find order with your query")
-    if start and end:
-        orders = Order.objects.filter(ordered_date__range=[start, end]).order_by('-ordered_date')
-        if not orders:
-            messages.warning(request, "Can not find order with your query")
-    context = {
-                'object': orders
-            }
-    return render(request, 'main/order_history.html', context)
-
 
 class SellerOrderView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
@@ -382,9 +397,9 @@ def remove_single_item_from_cart(request, slug):
     if order_qs.exists():
         order = order_qs[0]
         # check if the order item is in the order
-        if order.items.filter(item__slug=item.slug).exists():
+        if order.items.filter(product__slug=item.slug).exists():
             order_item = OrderItem.objects.filter(
-                item=item,
+                product=item,
                 user=request.user,
                 ordered=False
             )[0]
@@ -512,6 +527,7 @@ def accountpage(request,pk):
                 #         'user':user,
                 #     }  
                 # user.save()  
+                messages.success(request, "Your profile is updated successfully!")
                 return render(request, template_name='main/account.html',context=context)
             else:
                 messages.warning(request, "Invalid input, please check")
@@ -687,6 +703,10 @@ class CheckoutView(View):
                 #     messages.warning(
                 #         self.request, "Invalid payment option selected")
                 #     return redirect('checkout')
+                if self.request.user.balance - order.get_total() < 0:
+                    messages.warning(
+                        self.request, "Please top your balance before checkout")
+                    return redirect('account', pk = self.request.user.id)
                 self.request.user.balance -= order.get_total()
                 self.request.user.save()
                 order_items = order.items.all()
@@ -702,13 +722,39 @@ class CheckoutView(View):
             messages.warning(self.request, "You do not have an active order")
             return redirect("order-summary")
 
+def get_coupon(request, code):
+    try:
+        coupon = Coupon.objects.get(code=code)
+        return coupon
+    except ObjectDoesNotExist:
+        messages.info(request, "This coupon does not exist")
+        return redirect("checkout")
+
+class AddCouponView(View):
+    def post(self, *args, **kwargs):
+        form = CouponForm(self.request.POST or None)
+        if form.is_valid():
+            try:
+                code = form.cleaned_data.get('code')
+                order = Order.objects.get(
+                    user=self.request.user, ordered=False)
+                order.coupon = get_coupon(self.request, code)
+                order.save()
+                messages.success(self.request, "Successfully added coupon")
+                return redirect("checkout")
+            except ObjectDoesNotExist:
+                messages.info(self.request, "You do not have an active order")
+                return redirect("checkout")
+
+
+
 class InventoryView(View):
     def get(self, *args, **kwargs):
         try:
             # orders = Order.objects.filter(user = self.request.user)
             # return render(self.request, "main/intentory.html", context = {'orders': orders})
             object = Product.objects.filter(seller = self.request.user)
-            general = General_Product.objects.all()
+            general = General_Product.objects.filter(proved = True)
             category = Category.objects.all()
             form = AddProductForm()
             id = self.request.user.id
@@ -761,4 +807,32 @@ class InventoryView(View):
             messages.success(self.request, "Successfully edit inventory")
             return redirect("inventory")
 
-        
+@login_required
+def create_product(request):
+    if request.method == 'GET':
+        category = Category.objects.all()
+        context = {
+            'object':category,
+        }
+        return render(request, template_name='main/create_product.html',context = context)
+    
+    if request.method == 'POST':
+        form =  CreateProductForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('name')
+            category= form.cleaned_data.get('category')
+            description = form.cleaned_data.get('description')
+            image =  form.cleaned_data.get('image')
+            category = Category.objects.get(name = category)
+            if category:
+                product = General_Product.objects.create(category = category, product_name = name, description = description, product_img = image, proved = False)
+                product.save()
+            
+                messages.success(request, "Successfully submit the request")
+                return redirect("inventory")
+            else:
+                messages.warning(request, "Please choose a category")
+                return redirect("inventory")
+        else:
+            messages.warning(request, "Invalid request")
+            return redirect("inventory")

@@ -2,7 +2,7 @@
 
 
 {% block title %}
-    products-page
+    inventory
 {% endblock %}
 
 {% block content %}
@@ -146,6 +146,8 @@
 </div>
 
 <h2 class="my-5 h2 text-center">Add new product</h2>
+<P> Products sold in Paws are standardized across sellers. </P>
+  <p>  If you want to add a new product not exiting in current product list, please submit a <a href="{% url 'create_product' %}">request</a>.</p>
 <table class="table table-hover">
 
 <thead>
