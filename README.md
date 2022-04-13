@@ -35,4 +35,9 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+Run following commands to import data
+```
+python manage.py runscript import_data
+```
+
 Run `python manage.py runserver` to browse the webpage
