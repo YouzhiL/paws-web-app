@@ -7,7 +7,7 @@
 # Overview
 This project creates a mini amazon for our best friends paws -- cats and dogs.The online shopping site will tailor products for pets.As pets have become more and more important members of human lives, we have seen an increase in demand for pet products and thus create a business opportunity for e-commerce that specializes in selling pet products. We hope our final product will be a convenient stop for pet owners to shop and explore for their loved ones.
 
-Youtube Presentation Link: https://www.youtube.com/watch?v=6H1oHbvsUs8
+**Youtube Presentation Link: https://www.youtube.com/watch?v=6H1oHbvsUs8**
 
 # Main Features
 ## Account / Purchases
