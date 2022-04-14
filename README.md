@@ -23,7 +23,7 @@ Users can act as a seller and edit the inventory information.
 ## Feedback
 Users can add rating/reviews to products/sellers.
 
-# Usage
+# Implementation
 Edit the `Database` setting in paws_ltd/setting.py
 Add your postfreSQL username and password in `USER` and `PASSWORD`
 ```
