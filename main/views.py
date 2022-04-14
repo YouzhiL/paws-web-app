@@ -792,7 +792,7 @@ class InventoryView(View):
             quantiy = form.cleaned_data.get('quantity')
             price = form.cleaned_data.get('price')
             discount_price = form.cleaned_data.get('dprice')
-            product = Product.objects.filter(seller=self.request.user)
+            product = Product.objects.filter(seller=self.request.user, general_product = General_Product.objects.get(product_name = general))
             if product.exists():
                 messages.warning(self.request, "You are selling this product now, you can choose to edit the quantity")
                 return redirect("inventory")
