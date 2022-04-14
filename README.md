@@ -1,4 +1,4 @@
-# Paws-online-pet-store
+# Paws.com
 <img width="1368" alt="Screen Shot 2022-04-03 at 11 31 39 AM" src="https://user-images.githubusercontent.com/97713325/161435929-178ff9c4-8a8d-4ee3-9d56-944ecdb03537.png">
 
 
@@ -8,7 +8,7 @@ This project creates a mini amazon for our best friends paws -- cats and dogs.Th
 
 Youtube Presentation Link: https://www.youtube.com/watch?v=6H1oHbvsUs8
 
-# Main features
+# Main Features
 ## Account / Purchases
 Users can register, login, logout and edit their account information.
 Users can browse their purchase history.
